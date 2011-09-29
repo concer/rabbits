@@ -1,8 +1,16 @@
-
+/**
+ * @filename traffic_tracjer.cpp
+ *
+ * @brief allows to print on screen and on a text file the traffic (in terms of Bytes per second)
+measured on the NoC
+ *
+ * @author Nicola Concer
+ * @sa        traffic_tracjer.h
+ */
 
 #include <traffic_tracker.h>
 
-
+/// Constructor
 c_traffic::c_traffic(int _n_masters,int _n_slaves):n_masters(_n_masters), n_slaves(_n_slaves){
 	nodes = _n_masters + _n_slaves;
 	// vec= new std::vector<t_traffic_cell>;
@@ -18,6 +26,7 @@ c_traffic::c_traffic(int _n_masters,int _n_slaves):n_masters(_n_masters), n_slav
 	#endif
 };
 
+/// Destructor
 c_traffic::~c_traffic()
 {
 	vec.resize(0);
@@ -33,6 +42,10 @@ c_traffic::~c_traffic()
 	
 }
 
+/**
+ * Records a request for a given <master,slave> and its type
+ * forwards them on the output.
+ */
 void c_traffic::add_master_transaction(vci_request& req){	
 	if(req.srcid >= n_masters || req.slave_id >= nodes ){
 		printf("error add_master_transaction %d >= %d || %d >= %d\n",req.srcid,n_masters,req.slave_id , nodes);
@@ -57,6 +70,11 @@ void c_traffic::add_master_transaction(vci_request& req){
 	}
 	// printf("m:%d s:%d d:%lu\n",req.srcid,slave_id,vec[req.srcid][slave_id].bytes);
 }
+
+/**
+ * Records a response for a given <master,slave> and its type
+ * forwards them on the output.
+ */
 
 void c_traffic::add_slave_transaction(vci_response& resp){
 	
@@ -138,7 +156,6 @@ void c_traffic::print_values(){
 /**************************************************************************
  *  prints all the info on the screen
 **************************************************************************/
-
 void c_traffic::print_values(){ 
 	t_traffic_cell::const_iterator it;
 	printf("--------------------------------------------\n");

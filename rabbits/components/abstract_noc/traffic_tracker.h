@@ -1,20 +1,11 @@
-/*
- *  Copyright (c) 2010 TIMA Laboratory
+/**
+ * @filename traffic_tracjer.h
  *
- *  This file is part of Rabbits.
+ * @brief allows to print on screen and on a text file the traffic (in terms of Bytes per second)
+measured on the NoC
  *
- *  Rabbits is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Rabbits is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Rabbits.  If not, see <http://www.gnu.org/licenses/>.
+ * @author Nicola Concer
+ * @sa        traffic_tracjer.cpp
  */
 
 #ifndef _TRAFFIC_MONITOR_H
@@ -26,16 +17,19 @@
 #include <vector>
 #include <map>
 #include "config_noc.h"
+
+/// turn on/off the on-screen printing
 // #define PRINT_SCREEN
 
+/// plot the maximum values recorded so far
+// #define PRINT_MAX_TRAFFIC
 
-/**************** 
-	Nicola 
-*****************/
+
 
 #define TRAFFIC_MONITOR_DELAY 1000
 #define TRAFFIC_SHORT_MSG_SIZE 64
 
+/// types of operations measured
 typedef struct{
 	unsigned long bytes;
 	unsigned int read_reqs;
@@ -48,8 +42,16 @@ typedef struct{
 
 	
 typedef std::map<int,t_cell>   t_traffic_cell;
-// typedef std::map<int,unsigned long>   t_traffic_cell;
 
+
+/**
+ * @brief Class that hold the vector of registered traffic
+ * the traffic is recorded per pair <source-dest>  per second
+ *
+ * @tparam      _n_masters number of master nodes
+ * @tparam      _n_slaves  number of slaves
+ * 
+ */
 class c_traffic{
 
 public:
@@ -86,10 +88,6 @@ public:
 	std::vector<t_traffic_cell> vec;
 };
 
-
-/**************** 
-	End Nicola 
-*****************/
 
 
 #endif

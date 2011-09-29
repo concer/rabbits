@@ -13,8 +13,6 @@
 // turn on/off the traffic recording. Not compatible with the COSI NoC (yet)
 // #define TRACK_TRAFFIC
 
-// write the vector
-// #define PRINT_MAX_TRAFFIC
 
 //  write the max values in a text file
 #define PRINT_VECTORS
