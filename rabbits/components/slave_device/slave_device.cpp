@@ -68,7 +68,8 @@ void slave_device::request_thread ()
         m_rsp.rtrdid   = m_req.trdid;
         m_rsp.reop     = 1;
         m_rsp.rbe      = be;
-
+		m_rsp.rcmd	   = cmd;
+		
         switch (cmd)
         {
         case CMD_WRITE:

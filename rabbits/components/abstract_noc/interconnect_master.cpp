@@ -124,6 +124,10 @@ void interconnect_master::dispatch_requests_thread ()
         req.address = addr - m_map[i].begin_address + m_map[i].intern_offset;
 
         slave->add_request (req);
+
+		#ifdef TRACK_TRAFFIC
+		m_parent->track_request(req);
+		#endif
     }
 }
 

@@ -21,6 +21,7 @@
 #define _INTERCONNECT_H
 
 #include <abstract_noc.h>
+#include <traffic_tracker.h>
 
 class interconnect_master;
 class interconnect_slave;
@@ -52,6 +53,20 @@ public:
     inline int get_nmasters () {return m_nMasters; }
     inline int get_nslaves () {return m_nSlaves; }
 
+	/**
+	methods to register the data exchanged  the NoC
+	**/
+	#ifdef TRACK_TRAFFIC
+		inline void track_request(vci_request& req){
+			traffic_tracker->add_master_transaction(req);
+		};
+		inline void track_reply(vci_response& rep){
+		
+			traffic_tracker->add_slave_transaction(rep);
+		};
+		void traffic_tracker_thread();
+	#endif
+
 private:
     void internal_init ();
 
@@ -60,6 +75,10 @@ protected:
     interconnect_master                 **m_masters;
     int                                 m_nSlaves;
     interconnect_slave                  **m_slaves;
+
+	#ifdef TRACK_TRAFFIC
+	c_traffic							*traffic_tracker; //< enable the tracking of data along the virtual NoC
+	#endif
 };
 
 #endif

@@ -29,6 +29,11 @@ interconnect::interconnect (sc_module_name name, int nmasters, int nslaves)
     m_nSlaves = nslaves;
 
     internal_init ();
+
+	#ifdef TRACK_TRAFFIC
+	traffic_tracker = new c_traffic(m_nMasters,m_nSlaves);
+	SC_THREAD (traffic_tracker);
+	#endif
 }
 
 interconnect::~interconnect ()
@@ -95,18 +100,40 @@ void interconnect::connect_slave_64 (int devid, sc_port<VCI_GET_REQ_IF> &getp,
 }
 
 
+/***************************************************************************************************/
+#ifdef TRACK_TRAFFIC
+// cyclically pint the traffic measurement
+template< int FlitWidth >
+void interconnect< FlitWidth >::traffic_tracker_thread(){
+/***************************************************************************************************/	
+	
+	while(1){
+		
+		// wait(TRAFFIC_MONITOR_DELAY,SC_NS);
+		wait(1,SC_SEC);
+		
+		traffic_tracker->print_values();
+		traffic_tracker->reset_values();
+		
+	}
+}
+#endif
+
+
+/***************************************************************************************************/
 ostream &operator<<(ostream& output, const vci_request& value)
 {
     output << "The fields of the request transactions are : " << endl;
     output << "------------------------------------------------- " << endl;
-    output << "address is " << std::hex << value.address << endl;
-    output << "cmd is " << std::hex << value.cmd << endl;
-    output << "srcid is " << (unsigned int) value.srcid << endl;
-    output << "trdid is " <<(unsigned int) value.trdid << endl;
-    output << "be is " << std::hex << (unsigned int) value.be << endl;
-    output << "wdata ";
+    output << "srcid is :" << (unsigned int) value.srcid << endl;
+	output << "slave_id is :" << value.slave_id << endl;
+    output << "address is :" << std::hex << value.address << endl;
+    output << "cmd is :" << std::hex << value.cmd << endl;
+    output << "trdid is :" <<(unsigned int) value.trdid << endl;
+    output << "be is :" << std::hex << (unsigned int) value.be << endl;
+    output << "wdata :"<<endl;
     for (unsigned int j(0);j< 8;++j)
-        output << std::hex << (unsigned int) value.wdata[j] << '\n';
+        output << "d["<< j << "]: " << std::hex << (unsigned int) value.wdata[j] << '\n';
     output << endl;
     output << "------------------------------------------------- " << endl;
 
@@ -117,19 +144,20 @@ ostream &operator<<(ostream& output, const vci_response& value)
 {
     output << "The fields of the response transactions are : " << endl;
     output << "------------------------------------------------- " << endl;
-    output << "rerror is " << value.rerror << endl;
-    output << "rsrcid is " << (unsigned int) value.rsrcid << endl;
-    output << "rtrdid is " <<(unsigned int) value.rtrdid << endl;
-    output << "rbe is " << std::hex << (unsigned int) value.rbe << endl;
-    output << "rdata ";
+    output << "rsrcid is :" << (unsigned int) value.rsrcid << endl;
+    output << "slave_id is :" <<(unsigned int) value.slave_id << endl;
+    output << "rerror is :" << value.rerror << endl;
+    output << "rtrdid is :" <<(unsigned int) value.rtrdid << endl;
+    output << "rbe is :" << std::hex << (unsigned int) value.rbe << endl;
+    output << "n_bytes is :" <<(unsigned int) value.n_bytes << endl;
+    output << "rdata :";
     for (unsigned int j(0);j< 8;++j)
-        output << std::hex << (unsigned int) value.rdata[j] << '\n';
+        output << "d["<< j << "]: " <<  std::hex << (unsigned int) value.rdata[j] << '\n';
     output << endl;
     output << "------------------------------------------------- " << endl;
 
     return output;
 }
-
 /*
  * Vim standard variables
  * vim:set ts=4 expandtab tw=80 cindent syntax=c:

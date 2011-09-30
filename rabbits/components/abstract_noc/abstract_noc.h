@@ -60,6 +60,10 @@ namespace noc
 
         uint32_t    initial_address;
         int         slave_id;
+
+		// **************
+		// NoC and Traffic Tracking
+		int n_bytes;
     };
     enum {
         CMD_NOP,
@@ -84,6 +88,11 @@ namespace noc
         // **************
         // Extra field
         uint8_t   rbe;
+		// **************
+		// NoC and Traffic Tracking
+		uint16_t slave_id; // sending slave
+		uint8_t rcmd;
+		uint8_t n_bytes;
     };
 
     template <typename T>

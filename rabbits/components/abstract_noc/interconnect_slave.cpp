@@ -65,7 +65,11 @@ void interconnect_slave::dispatch_responses_thread ()
 
         wait (1, SC_NS);
 
-        master = m_parent->get_master (rsp.rsrcid);
+	 	#ifdef TRACK_TRAFFIC
+	  	m_parent->track_reply(rsp);
+		#endif
+        
+		master = m_parent->get_master (rsp.rsrcid);
         if (master == NULL)
         {
             printf ("Error (slaveid=%d): Cannot find the masterid %d!\n",
