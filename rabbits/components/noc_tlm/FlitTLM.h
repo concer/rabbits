@@ -14,8 +14,13 @@
 #include <string>
 #include <iomanip>
 
+#ifdef NPORTS
+#define MAX_SRC     NPORTS
+#define MAX_DEST    NPORTS
+#else
 #define MAX_SRC     20
 #define MAX_DEST    20
+#endif
 #define MAX_TRANS   20
 #define MAX_FLIT    10
 
@@ -29,15 +34,16 @@ class FlitTLM {
     int srcID;      //!< source identifier
     int destID;     //!< destination identifier
     int flitID;     //!< flit id in a transaction
-
+    bool isTail;    //!< indiates whether this is the tail flit of the transaction
     /**
      * constructor
      */
-    FlitTLM (int transID=0, int srcID=0, int destID=0, int flitID=0) {
+    FlitTLM (int transID=0, int srcID=0, int destID=0, int flitID=0, bool isTail=false) {
       this->transID = transID;
       this->srcID = srcID;
       this->destID = destID;
       this->flitID = flitID;
+      this->isTail = isTail;
     }
 
     /**
@@ -49,7 +55,8 @@ class FlitTLM {
               rhs.transID == transID &&
               rhs.srcID == srcID && 
               rhs.destID == destID &&
-              rhs.flitID == flitID
+              rhs.flitID == flitID &&
+              rhs.isTail == isTail
              );
     }
 
@@ -62,6 +69,7 @@ class FlitTLM {
       destID = rhs.destID;
       transID = rhs.transID;
       flitID = rhs.flitID;
+      isTail = rhs.isTail;
       return *this;
     }
 
@@ -75,6 +83,7 @@ class FlitTLM {
       sc_trace(tf, v.srcID, NAME + ".srcID");
       sc_trace(tf, v.destID, NAME + ".destID");
       sc_trace(tf, v.flitID, NAME + ".flitID");
+      sc_trace(tf, v.isTail, NAME + ".isTail");
     }
 
     /**
@@ -88,6 +97,7 @@ class FlitTLM {
       os << ", srcID=" << v.srcID;
       os << ", destID=" << v.destID;
       os << ", flitID=" << v.flitID;
+      os << ", isTail=" << v.isTail;
       os << ")";
       return os;
     }
@@ -97,12 +107,13 @@ class FlitTLM {
      * @note you may want to adjust individual variables after executing this function, especially FlitTLM::transID and FlitTLM::flitID.
      */
     static inline FlitTLM &generateRandom ( FlitTLM &v ) {
-        v.srcID = int(rand() % (MAX_SRC+1));
+        v.srcID = int(rand() % (MAX_SRC));
         do {
-          v.destID = int(rand() % (MAX_DEST+1));
+          v.destID = int(rand() % (MAX_DEST));
         } while (v.srcID == v.destID);
-        v.transID = int(rand() % (MAX_TRANS+1));
-        v.flitID = int(rand() % (MAX_FLIT+1));
+        v.transID = int(rand() % (MAX_TRANS));
+        v.flitID = int(rand() % (MAX_FLIT));
+        v.isTail = (int(rand() % 2))?true:false;
     }
 
 };
